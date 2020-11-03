@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nfs-client-provisioner
+  namespace: easygo
+  labels:
+    name: nfs
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: nfs-client-provisioner
+  template:
+    metadata:
+      labels:
+        app: nfs-client-provisioner
+    spec:
+      serviceAccountName: nfs-client-provisioner
+      containers:
+        - name: nfs-client-provisioner
+          image: quay.io/external_storage/nfs-client-provisioner:latest
+          volumeMounts:
+            - name: nfs-client-root
+              mountPath: /persistentvolumes
+          env:
+            - name: PROVISIONER_NAME
+              value: mynfs                  # 根据自己的名称来修改，与 storageclass.yaml 中的 provisioner 名字一致
+            - name: NFS_SERVER
+              value: 10.131.0.121           # NFS服务器所在的 ip
+            - name: NFS_PATH
+              value: /nfs                   # 共享存储目录    # 注意：虚拟机的共享目录，不能用于nfs
+      volumes:
+        - name: nfs-client-root
+          nfs:
+            server: 10.131.0.121            # NFS服务器所在的 ip
+            path: /nfs                      # 共享存储目录    # 注意：虚拟机的共享目录，不能用于nfs
