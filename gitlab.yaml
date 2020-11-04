@@ -127,9 +127,9 @@ spec:
   type: NodePort
   ports:
     - name: http
-      port: 8080
+      port: 80            # k8s内部访问时用到的端口
       targetPort: http
-      nodePort: 30080
+      nodePort: 30080     # k8s外部访问时用到的端口
     - name: ssh
       port: 22
       targetPort: ssh
