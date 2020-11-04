@@ -34,6 +34,10 @@ spec:
       labels:
         name: gitlab
     spec:
+      hostAliases:
+        - ip: 10.131.0.121
+          hostnames:
+            - myk3s.com
       containers:
         - name: gitlab
           image: sameersbn/gitlab:11.8.1
