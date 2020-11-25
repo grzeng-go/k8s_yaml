@@ -1,0 +1,28 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  # 此处的 "namespace" 被省略掉是因为 ClusterRoles 是没有命名空间的
+  name: easygo-default-role
+rules:
+  - apiGroups: ["", "apps"]
+    resources: [ "persistentvolumes", "persistentvolumeclaims", "services", "pods", "deployments"]
+    verbs: [ "get", "list", "watch", "create", "delete" ]
+  - apiGroups: ["extensions"]
+    resources: ["ingresses"]
+    verbs: ["get", "list", "watch", "create", "delete"]
+  - apiGroups: ["", "apps", "batch", "autoscaling"]
+    resources: ["nodes", "replicationcontrollers", "daemonsets", "replicasets", "statefulsets", "horizontalpodautoscalers", "jobs", "cronjobs"]
+    verbs: ["list","watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: easygo-default-role-binding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: easygo-default-role
+subjects:
+  - kind: ServiceAccount
+    name: default
+    namespace: easygo

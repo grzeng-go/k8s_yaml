@@ -1,0 +1,71 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: tensorflow-claim
+  namespace: easygo
+  labels:
+    app: tensorflow
+#  annotations:
+#    volume.beta.kubernetes.io/storage-class: "nfs" # 与 storageclass.yaml 中的 name 一致
+spec:
+  storageClassName: nfs
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 20Gi
+
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tensorflow
+  namespace: easygo
+  labels:
+    app: tensorflow
+spec:
+  replicas: 0
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      name: tensorflow
+      labels:
+        app: tensorflow
+    spec:
+      containers:
+        - name: tensorflow
+          image: tensorflow/tensorflow:2.1.2-jupyter
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8888
+              name: http
+          volumeMounts:
+            - mountPath: /tf/crnn_by_tensorflow
+              name: data
+      restartPolicy: Always
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: tensorflow-claim
+  selector:
+    matchLabels:
+      app: tensorflow
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: tensorflow
+  namespace: easygo
+spec:
+  selector:
+    app: tensorflow
+  ports:
+    - port: 8888
+      targetPort: http
+      nodePort: 30188
+  type: NodePort

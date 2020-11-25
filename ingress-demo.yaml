@@ -1,0 +1,25 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: test
+  namespace: easygo
+spec:
+  rules:
+    - host: gitlab.myk3s.com   # 要在准备访问k8s集群的机器上的hosts中配置该域名
+      http:
+        paths:
+          - backend:
+              serviceName: gitlab
+              servicePort: 80
+    - host: mysql.myk3s.com
+      http:
+        paths:
+          - backend:
+              serviceName: mysql
+              servicePort: 3306
+    - host: redis.myk3s.com   # todo 转发tcp,需特殊配置
+      http:
+        paths:
+          - backend:
+              serviceName: redis
+              servicePort: 6379
