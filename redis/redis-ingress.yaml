@@ -1,0 +1,13 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRouteTCP
+metadata:
+  name: redis
+  namespace: easygo
+spec:
+  entryPoints:
+    - redis       # 要注意的是这里的 entryPoints 部分，是根据我们启动的 Traefik 的静态配置中的 entryPoints 来决定的
+  routes:
+    - match: HostSNI(`*`)
+      services:
+        - name: redis
+          port: 6379

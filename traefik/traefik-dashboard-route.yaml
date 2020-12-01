@@ -1,0 +1,15 @@
+# kubectl apply -f traefik-dashboard-route.yaml -n kube-system  因为traefik部署在kube-system上，所以要加命名空间
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: traefik-dashboard-route
+  namespace: kube-system
+spec:
+  entryPoints:
+    - web
+  routes:
+    - match: Host(`traefik.myk3s.com`)
+      kind: Rule
+      services:
+        - name: traefik
+          port: 8080
